@@ -20,6 +20,8 @@ import PaymentHistory from './pages/beneficiary/PaymentHistory';
 import SurveyorDashboard from './pages/surveyor/SurveyorDashboard';
 import BeneficiaryList from './pages/surveyor/BeneficiaryList';
 import BeneficiaryVerification from './pages/surveyor/BeneficiaryVerification';
+import ManualVerification from './pages/beneficiary/ManualVerification';
+import MarkIneligible from './pages/beneficiary/MarkIneligible';
 import AddNewUser from './pages/surveyor/AddNewUser';
 
 // Admin Pages
@@ -30,129 +32,145 @@ import ApprovalQueue from './pages/admin/ApprovalQueue';
 import BulkUpload from './pages/admin/BulkUpload';
 
 function App() {
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/beneficiary/login" element={<BeneficiaryLogin />} />
-          <Route path="/surveyor/login" element={<SurveyorLogin />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
+	return (
+		<AuthProvider>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<LandingPage />} />
+					<Route path="/beneficiary/login" element={<BeneficiaryLogin />} />
+					<Route path="/surveyor/login" element={<SurveyorLogin />} />
+					<Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* Beneficiary Routes */}
-          <Route
-            path="/beneficiary/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['beneficiary']}>
-                <BeneficiaryDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/beneficiary/banks"
-            element={
-              <ProtectedRoute allowedRoles={['beneficiary']}>
-                <BankVerification />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/beneficiary/card"
-            element={
-              <ProtectedRoute allowedRoles={['beneficiary']}>
-                <DigitalCard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/beneficiary/payments"
-            element={
-              <ProtectedRoute allowedRoles={['beneficiary']}>
-                <PaymentHistory />
-              </ProtectedRoute>
-            }
-          />
+					{/* Beneficiary Routes */}
+					<Route
+						path="/beneficiary/dashboard"
+						element={
+							<ProtectedRoute allowedRoles={['beneficiary']}>
+								<BeneficiaryDashboard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/beneficiary/banks"
+						element={
+							<ProtectedRoute allowedRoles={['beneficiary']}>
+								<BankVerification />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/beneficiary/card"
+						element={
+							<ProtectedRoute allowedRoles={['beneficiary']}>
+								<DigitalCard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/beneficiary/payments"
+						element={
+							<ProtectedRoute allowedRoles={['beneficiary']}>
+								<PaymentHistory />
+							</ProtectedRoute>
+						}
+					/>
 
-          {/* Surveyor Routes */}
-          <Route
-            path="/surveyor/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['surveyor']}>
-                <SurveyorDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/surveyor/beneficiaries"
-            element={
-              <ProtectedRoute allowedRoles={['surveyor']}>
-                <BeneficiaryList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/surveyor/verify/:uid"
-            element={
-              <ProtectedRoute allowedRoles={['surveyor']}>
-                <BeneficiaryVerification />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/surveyor/add-user"
-            element={
-              <ProtectedRoute allowedRoles={['surveyor']}>
-                <AddNewUser />
-              </ProtectedRoute>
-            }
-          />
+					{/* Surveyor Routes */}
+					<Route
+						path="/surveyor/dashboard"
+						element={
+							<ProtectedRoute allowedRoles={['surveyor']}>
+								<SurveyorDashboard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/surveyor/beneficiaries"
+						element={
+							<ProtectedRoute allowedRoles={['surveyor']}>
+								<BeneficiaryList />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/surveyor/verify/:uid"
+						element={
+							<ProtectedRoute allowedRoles={['surveyor']}>
+								<BeneficiaryVerification />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/surveyor/manual-verification"
+						element={
+							<ProtectedRoute allowedRoles={['surveyor']}>
+								<ManualVerification />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/surveyor/add-user"
+						element={
+							<ProtectedRoute allowedRoles={['surveyor']}>
+								<AddNewUser />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/surveyor/mark-ineligible"
+						element={
+							<ProtectedRoute allowedRoles={['surveyor']}>
+								<MarkIneligible />
+							</ProtectedRoute>
+						}
+					/>
 
-          {/* Admin Routes */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/beneficiaries"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <BeneficiaryManagement />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/surveyors"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <SurveyorManagement />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/approvals"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <ApprovalQueue />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/bulk-upload"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <BulkUpload />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-        <Toaster />
-      </BrowserRouter>
-    </AuthProvider>
-  );
+					{/* Admin Routes */}
+					<Route
+						path="/admin/dashboard"
+						element={
+							<ProtectedRoute allowedRoles={['admin']}>
+								<AdminDashboard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/beneficiaries"
+						element={
+							<ProtectedRoute allowedRoles={['admin']}>
+								<BeneficiaryManagement />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/surveyors"
+						element={
+							<ProtectedRoute allowedRoles={['admin']}>
+								<SurveyorManagement />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/approvals"
+						element={
+							<ProtectedRoute allowedRoles={['admin']}>
+								<ApprovalQueue />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/bulk-upload"
+						element={
+							<ProtectedRoute allowedRoles={['admin']}>
+								<BulkUpload />
+							</ProtectedRoute>
+						}
+					/>
+				</Routes>
+				<Toaster />
+			</BrowserRouter>
+		</AuthProvider>
+	);
 }
 
 export default App;
