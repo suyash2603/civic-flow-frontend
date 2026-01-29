@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Search, UserPlus, UserX, Eye, LogOut, Users, CheckCircle } from 'lucide-react';
+import { Shield, Search, UserPlus, UserX, Eye, LogOut, Users } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useAuth } from '../../contexts/AuthContext';
@@ -23,7 +23,7 @@ export default function SurveyorDashboard() {
 		try {
 			const [dashboardRes, beneficiariesRes] = await Promise.all([
 				api.get('/surveyor/dashboard'),
-				api.get('/surveyor/beneficiaries', { params: { verification_status: filter } })
+				api.get('/surveyor/beneficiaries')
 			]);
 			setDashboardData(dashboardRes.data);
 			setBeneficiaries(beneficiariesRes.data);
@@ -34,9 +34,30 @@ export default function SurveyorDashboard() {
 		}
 	};
 
+	/* ================= FIXED LOGIC ================= */
+
+	// ✅ ONLY verified AND NOT ineligible
+	const isVerifiedUser = (b) =>
+		b.eligibility_status !== 'ineligible' &&
+		b.bank_accounts?.some(acc => acc.verification_status === 'verified');
+
+	// ✅ ONLY pending (no verified accounts)
+	const isPendingUser = (b) =>
+		b.bank_accounts?.some(acc => acc.verification_status === 'pending') &&
+		!b.bank_accounts?.some(acc => acc.verification_status === 'verified');
+
+	/* =============================================== */
+
 	const filteredBeneficiaries = beneficiaries.filter(
-		(b) => b.name.toLowerCase().includes(searchTerm.toLowerCase()) || b.uid.includes(searchTerm)
+		(b) =>
+			b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			b.uid.includes(searchTerm)
 	);
+
+	const displayedBeneficiaries =
+		filter === 'not_verified'
+			? filteredBeneficiaries.filter(isPendingUser)
+			: filteredBeneficiaries.filter(isVerifiedUser);
 
 	if (loading) {
 		return (
@@ -183,41 +204,25 @@ export default function SurveyorDashboard() {
 							}`}
 							data-testid="tab-not-verified"
 						>
-							Not-Verified Users (
-							{
-								beneficiaries.filter((b) => b.bank_accounts?.some((acc) => acc.verification_status !== 'verified'))
-									.length
-							}
-							)
+							Not-Verified Users ({beneficiaries.filter(isPendingUser).length})
 						</button>
 						<button
 							onClick={() => setFilter('verified')}
 							className={`px-4 py-2 rounded-full font-semibold text-sm transition-colors ${
-								filter === 'verified' ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+								filter === 'verified'
+									? 'bg-indigo-700 text-white'
+									: 'bg-slate-100 text-slate-600 hover:bg-slate-200'
 							}`}
 							data-testid="tab-verified"
 						>
-							Verified Users (
-							{
-								beneficiaries.filter((b) => b.bank_accounts?.some((acc) => acc.verification_status === 'verified'))
-									.length
-							}
-							)
+							Verified Users ({beneficiaries.filter(isVerifiedUser).length})
 						</button>
 					</div>
 
 					{/* Beneficiary List */}
 					<div className="space-y-3">
-						{filteredBeneficiaries.slice(0, 10).map((beneficiary, index) => {
-							const hasVerifiedAccount = beneficiary.bank_accounts?.some(
-								(acc) => acc.verification_status === 'verified'
-							);
-							const eligibilityColor =
-								beneficiary.eligibility_status === 'ineligible'
-									? 'text-red-600'
-									: beneficiary.eligibility_status === 'pending_review'
-										? 'text-amber-600'
-										: 'text-slate-600';
+						{displayedBeneficiaries.slice(0, 10).map((beneficiary, index) => {
+							const hasVerifiedAccount = isVerifiedUser(beneficiary);
 
 							return (
 								<div
@@ -234,13 +239,26 @@ export default function SurveyorDashboard() {
 										<p className="text-sm text-slate-600">UID: {beneficiary.uid}</p>
 									</div>
 									<div>
-										{hasVerifiedAccount ? (
+										{/* {hasVerifiedAccount ? (
 											<span className="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold uppercase">
 												Verified
 											</span>
 										) : beneficiary.eligibility_status === 'ineligible' ? (
 											<span className="bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-full text-xs font-bold uppercase">
 												Ineligible
+											</span>
+										) : (
+											<span className="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1 rounded-full text-xs font-bold uppercase">
+												Pending
+											</span>
+										)} */}
+										{beneficiary.eligibility_status === 'ineligible' ? (
+											<span className="bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-full text-xs font-bold uppercase">
+												Ineligible
+											</span>
+										) : hasVerifiedAccount ? (
+											<span className="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold uppercase">
+												Verified
 											</span>
 										) : (
 											<span className="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1 rounded-full text-xs font-bold uppercase">
