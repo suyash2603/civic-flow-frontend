@@ -53,7 +53,7 @@ export default function LandingPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 mb-2">Surveyor</h2>
             <p className="text-slate-600 mb-6">
-              Verify beneficiaries, manage allocated areas, and run campaigns
+              Verify beneficiaries and run campaigns
             </p>
             <Button
               className="w-full bg-indigo-700 hover:bg-indigo-800 text-white rounded-full h-12 font-semibold"
